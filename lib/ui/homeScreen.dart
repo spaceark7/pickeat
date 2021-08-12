@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:pickeat_app/ui/restaurantListScreen.dart';
 import 'package:pickeat_app/widgets/platformWidget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,6 +15,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _bottomNavIndex = 0;
+
+  List<Widget> _listWidget = [
+    RestaurantListScreen(),
+    Placeholder(),
+    Placeholder()
+  ];
 
   List<BottomNavigationBarItem> _bottomNavBarItems = [
     BottomNavigationBarItem(
@@ -35,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildAndroid(BuildContext context) {
     return Scaffold(
-      body: Container(),
+      body: _listWidget[_bottomNavIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _bottomNavIndex,
         items: _bottomNavBarItems,
@@ -50,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
           items: _bottomNavBarItems,
         ),
         tabBuilder: (context, index) {
-          return Container();
+          return _listWidget[index];
         });
   }
 

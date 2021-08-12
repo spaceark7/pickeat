@@ -28,7 +28,10 @@ class MyApp extends StatelessWidget {
           unselectedItemColor: Colors.grey,
         ),
       ),
-      home: HomeScreen(),
+     initialRoute: HomeScreen.routeName,
+     routes: {
+       HomeScreen.routeName: (context) => HomeScreen(),
+     },
     );
   }
 }
