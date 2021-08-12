@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pickeat_app/common/style.dart';
+import 'package:pickeat_app/ui/homeScreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,18 +13,22 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'PickEat',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+       primaryColor: primaryBrandColor,
+       accentColor: secondaryBrandColor,
+       dividerColor: accentBrandColor,
+       scaffoldBackgroundColor: backgoundColor,
+       visualDensity: VisualDensity.adaptivePlatformDensity,
+       textTheme: brandTextTheme,
+       appBarTheme: AppBarTheme(
+         textTheme: brandTextTheme.apply(bodyColor: Colors.black),
+         elevation: 0
+       ),
+       bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          selectedItemColor: secondaryBrandColor,
+          unselectedItemColor: Colors.grey,
+        ),
       ),
-      home: SplashScreen(),
+      home: HomeScreen(),
     );
   }
 }
@@ -37,7 +43,7 @@ class SplashScreen extends StatelessWidget {
         decoration: BoxDecoration (
          image: DecorationImage(image: 
          AssetImage('assets/images/s1.jpg',),
-         fit: BoxFit.fitWidth)
+         fit: BoxFit.cover)
         ),
 
         child: Padding(
