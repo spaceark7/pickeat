@@ -14,7 +14,7 @@ class RestaurantListScreen extends StatefulWidget {
 }
 
 class _RestaurantListScreenState extends State<RestaurantListScreen> {
-  bool saved = false;
+  late List<Restaurant> favResto;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,6 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
           return ListView.builder(
               itemCount: restaurants.length,
               itemBuilder: (context, index) {
-               
                 return _buildRestaurantItems(context, restaurants[index]);
               });
         } else {
@@ -129,11 +128,13 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                           child: Center(
                             child: IconButton(
                                 onPressed: () {
-                                 
+                                  setState(() {
+                                    
+                                  });
                                 },
-                                icon:  Icon(Platform.isIOS
-                                        ? CupertinoIcons.heart
-                                        : Icons.favorite_outline),
+                                icon: Icon(Platform.isIOS
+                                    ? CupertinoIcons.heart
+                                    : Icons.favorite_outline),
                                 iconSize: 36.0,
                                 color: secondaryBrandColor),
                           ),
