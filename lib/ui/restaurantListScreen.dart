@@ -1,11 +1,21 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_simple_rating_bar/flutter_simple_rating_bar.dart';
 import 'package:pickeat_app/common/style.dart';
 import 'package:pickeat_app/data/model/restaurant.dart';
 import 'package:pickeat_app/widgets/platformWidget.dart';
 
-class RestaurantListScreen extends StatelessWidget {
+class RestaurantListScreen extends StatefulWidget {
+  @override
+  _RestaurantListScreenState createState() => _RestaurantListScreenState();
+}
+
+class _RestaurantListScreenState extends State<RestaurantListScreen> {
+  bool saved = false;
+
   @override
   Widget build(BuildContext context) {
     return PlatformWidget(androidBuilder: _buildAndroid, iosBuilder: _buildIOS);
@@ -21,10 +31,11 @@ class RestaurantListScreen extends StatelessWidget {
           return ListView.builder(
               itemCount: restaurants.length,
               itemBuilder: (context, index) {
+               
                 return _buildRestaurantItems(context, restaurants[index]);
               });
         } else {
-          return Container(
+          return Center(
             child: Text('No Data'),
           );
         }
@@ -57,44 +68,83 @@ class RestaurantListScreen extends StatelessWidget {
   Widget _buildRestaurantItems(BuildContext context, Restaurant restaurant) {
     return Material(
         color: primaryBrandColor,
-        child: GestureDetector(
-          onTap: () {
-            ScaffoldMessenger(
-                child: SnackBar(
-              content: Text('hit'),
-            ));
-          },
-          child: Container(
-            child: Column(
-              children: [
-                Image.network(
-                  restaurant.pictureId,
-                  height: 100,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  child: Column(
-                    children: [
-                      Text(restaurant.name),
-                      Text(restaurant.description)
-                    ],
-                  ),
-                )
-              ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            elevation: 8,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+            child: InkWell(
+              onTap: () {},
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(children: [
+                    Ink.image(
+                      height: 200,
+                      image: NetworkImage(restaurant.pictureId),
+                      fit: BoxFit.cover,
+                    )
+                  ]),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 8.0, left: 10.0, bottom: 16.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              restaurant.name,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline5!
+                                  .apply(color: Colors.black),
+                            ),
+                            Text(restaurant.city),
+                            RatingBar(
+                              rating: restaurant.rating,
+                              icon: Icon(
+                                Platform.isIOS
+                                    ? CupertinoIcons.star
+                                    : Icons.star,
+                                size: 16,
+                                color: Colors.grey,
+                              ),
+                              starCount: 5,
+                              spacing: 0.0,
+                              size: 16,
+                              isIndicator: false,
+                              allowHalfRating: true,
+                              color: secondaryBrandColor,
+                            )
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 16.0),
+                          child: Center(
+                            child: IconButton(
+                                onPressed: () {
+                                 
+                                },
+                                icon:  Icon(Platform.isIOS
+                                        ? CupertinoIcons.heart
+                                        : Icons.favorite_outline),
+                                iconSize: 36.0,
+                                color: secondaryBrandColor),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
-        )
-
-        // ListTile(
-        //   contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        //   leading: Image.network(
-        //     restaurant.pictureId,
-        //     width: 80,
-        //   ),
-        //   title: Text(restaurant.name, style: Theme.of(context).textTheme.headline5,),
-        //   subtitle: Text(restaurant.description),
-        //   onTap: () {},
-        // ),
-        );
+        ));
   }
 }

@@ -9,6 +9,7 @@ class Restaurant {
   late double rating;
   late Object menus;
 
+
   Restaurant({
     required this.id,
     required this.name,
@@ -17,6 +18,7 @@ class Restaurant {
     required this.city,
     required this.rating,
     required this.menus,
+
   });
 
   Restaurant.fromJson(Map<String, dynamic> resturant) {
@@ -28,8 +30,6 @@ class Restaurant {
     rating = resturant['rating'].toDouble();
 
     menus = resturant['menus'];
-
-    
   }
 }
 
