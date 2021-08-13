@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'PickEat',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
        primaryColor: primaryBrandColor,
        accentColor: secondaryBrandColor,

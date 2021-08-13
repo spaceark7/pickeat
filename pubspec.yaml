@@ -29,6 +29,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_fonts: ^2.1.0
   flutter_simple_rating_bar: ^0.0.3
+  material_floating_search_bar: ^0.3.4
 
 dev_dependencies:
   flutter_test:

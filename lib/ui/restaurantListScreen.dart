@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_simple_rating_bar/flutter_simple_rating_bar.dart';
+import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:pickeat_app/common/style.dart';
 import 'package:pickeat_app/data/model/restaurant.dart';
 import 'package:pickeat_app/widgets/platformWidget.dart';
@@ -14,7 +15,8 @@ class RestaurantListScreen extends StatefulWidget {
 }
 
 class _RestaurantListScreenState extends State<RestaurantListScreen> {
-  late List<Restaurant> favResto;
+  List<String> fav = [];
+  String query = "";
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +30,34 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final List<Restaurant> restaurants = parseRestaurant(snapshot.data);
-          return ListView.builder(
-              itemCount: restaurants.length,
-              itemBuilder: (context, index) {
-                return _buildRestaurantItems(context, restaurants[index]);
-              });
+          final List<Restaurant> search = restaurants
+              .where((restaurant) => restaurant.name.toLowerCase().contains(query.toLowerCase()))
+              .toList();
+          print("Hasil cari $query  ${search.map((e) => e.name)}");
+
+          if (query.isEmpty) {
+            return ListView.builder(
+                itemCount: restaurants.length,
+                itemBuilder: (context, index) {
+                  return _buildRestaurantItems(context, restaurants[index]);
+                });
+          }  else if(search.isEmpty) {
+            return Center(
+            child: Text('Oops! We Can\'t Find It',
+            style: Theme.of(context).textTheme.bodyText1!.apply(
+              fontSizeDelta: 6.0,
+              fontWeightDelta: 2),),
+          );
+          }
+          
+          else {
+            return ListView.builder(
+                itemCount: search.length,
+                itemBuilder: (context, index) {
+                  return _buildRestaurantItems(context, search[index]);
+                });
+          }
+          
         } else {
           return Center(
             child: Text('No Data'),
@@ -43,14 +68,21 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
   }
 
   Widget _buildAndroid(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Pick\'eat',
-            style: Theme.of(context)
-                .textTheme
-                .headline4!
-                .apply(color: Colors.black)),
+    return FloatingSearchAppBar(
+      title: Text(
+        'Pick\'eat',
+        style:
+            Theme.of(context).textTheme.headline4!.apply(color: Colors.black),
       ),
+      transitionCurve: Curves.easeInOut,
+      transitionDuration: Duration(milliseconds: 900),
+      accentColor: secondaryBrandColor,
+      hintStyle: Theme.of(context).textTheme.bodyText1,
+      hint: 'I\'m Looking For ...',
+      onSubmitted: _handleSubmit,
+      clearQueryOnClose: true,
+      onQueryChanged: _handleChange,
+      colorOnScroll: primaryBrandColor,
       body: _buildList(context),
     );
   }
@@ -129,12 +161,38 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                             child: IconButton(
                                 onPressed: () {
                                   setState(() {
-                                    
+                                    if (fav.contains(restaurant.name)) {
+                                      fav.remove(restaurant.name);
+                                      final snackBar = SnackBar(
+                                        content: Text(
+                                            '${restaurant.name} is deleted from Favorite!'),
+                                        backgroundColor: accentBrandColor,
+                                        duration: Duration(seconds: 1),
+                                      );
+
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(snackBar);
+                                    } else {
+                                      fav.add(restaurant.name);
+                                      final snackBar = SnackBar(
+                                        content: Text('Added to Favorite!'),
+                                        backgroundColor: secondaryBrandColor,
+                                        duration: Duration(seconds: 1),
+                                      );
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(snackBar);
+                                    }
                                   });
+
+                                  print(fav.map((e) => e));
                                 },
-                                icon: Icon(Platform.isIOS
-                                    ? CupertinoIcons.heart
-                                    : Icons.favorite_outline),
+                                icon: fav.contains(restaurant.name)
+                                    ? Icon(Platform.isIOS
+                                        ? CupertinoIcons.heart
+                                        : Icons.favorite)
+                                    : Icon(Platform.isIOS
+                                        ? CupertinoIcons.heart
+                                        : Icons.favorite_outline),
                                 iconSize: 36.0,
                                 color: secondaryBrandColor),
                           ),
@@ -147,5 +205,17 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
             ),
           ),
         ));
+  }
+
+  void _handleSubmit(String keyword) {
+    setState(() {
+      query = keyword;
+    });
+  }
+
+  void _handleChange(String keyword) {
+    setState(() {
+      query = keyword;
+    });
   }
 }
