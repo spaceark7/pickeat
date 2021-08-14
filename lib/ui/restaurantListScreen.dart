@@ -9,6 +9,7 @@ import 'package:flutter_simple_rating_bar/flutter_simple_rating_bar.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:pickeat_app/common/style.dart';
 import 'package:pickeat_app/data/model/restaurant.dart';
+import 'package:pickeat_app/ui/detailRestaurantScreen.dart';
 import 'package:pickeat_app/widgets/platformWidget.dart';
 
 class RestaurantListScreen extends StatefulWidget {
@@ -44,7 +45,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
           topRated = rank;
 
           if (query.isEmpty) {
-            return MediaQuery.removePadding( 
+            return MediaQuery.removePadding(
               removeTop: true,
               context: context,
               child: ListView.builder(
@@ -74,7 +75,8 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                         ),
                       );
                     } else {
-                      return _buildRestaurantItems(context, restaurants[index-2]);
+                      return _buildRestaurantItems(
+                          context, restaurants[index - 2]);
                     }
                   }),
             );
@@ -124,7 +126,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
             items: topRated.map((e) => _listCarouselItems(context, e)).toList(),
             options: CarouselOptions(
                 height: 350,
-               aspectRatio: 2.0,
+                aspectRatio: 2.0,
                 autoPlay: true,
                 viewportFraction: 0.8,
                 autoPlayCurve: Curves.easeInOutCubic)),
@@ -133,7 +135,6 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
   }
 
   Widget _buildAndroid(BuildContext context) {
-   
     return FloatingSearchAppBar(
       title: Text(
         'Pick\'eat',
@@ -146,6 +147,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
       hintStyle: Theme.of(context).textTheme.bodyText1,
       hint: 'I\'m Looking For ...',
       onSubmitted: _handleSubmit,
+      iconColor: secondaryBrandColor,
       clearQueryOnClose: true,
       onQueryChanged: _handleChange,
       colorOnScroll: primaryBrandColor,
@@ -174,7 +176,10 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.pushNamed(context, DetailScreen.routeName,
+                    arguments: restaurant);
+              },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,7 +206,10 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyText1!
-                                  .apply(color: Colors.black, fontSizeDelta: 3, fontWeightDelta: 5),
+                                  .apply(
+                                      color: Colors.black,
+                                      fontSizeDelta: 3,
+                                      fontWeightDelta: 5),
                             ),
                             Text(restaurant.city),
                             RatingBar(
@@ -291,7 +299,9 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
       borderRadius: BorderRadius.circular(24.0),
       splashColor: secondaryBrandColor.withAlpha(80),
       focusColor: accentBrandColor,
-      onTap: () {},
+      onTap: () {
+        Navigator.pushNamed(context, DetailScreen.routeName, arguments: item);
+      },
       child: Padding(
         padding: const EdgeInsets.only(bottom: 16.0, left: 8),
         child: Stack(

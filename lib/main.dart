@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pickeat_app/common/style.dart';
+import 'package:pickeat_app/ui/detailRestaurantScreen.dart';
 import 'package:pickeat_app/ui/homeScreen.dart';
+
+import 'data/model/restaurant.dart';
 
 void main() {
   runApp(MyApp());
@@ -32,6 +35,7 @@ class MyApp extends StatelessWidget {
      initialRoute: HomeScreen.routeName,
      routes: {
        HomeScreen.routeName: (context) => HomeScreen(),
+       DetailScreen.routeName: (context) => DetailScreen(restaurant: ModalRoute.of(context)?.settings.arguments as Restaurant)
      },
     );
   }
