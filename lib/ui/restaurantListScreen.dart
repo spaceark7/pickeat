@@ -18,6 +18,7 @@ class RestaurantListScreen extends StatefulWidget {
 }
 
 class _RestaurantListScreenState extends State<RestaurantListScreen> {
+  
   List<String> fav = [];
   String query = "";
   List<Restaurant> topRated = [];
@@ -31,79 +32,87 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
     return FutureBuilder<String>(
       future: DefaultAssetBundle.of(context)
           .loadString('assets/local_restaurant.json'),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final List<Restaurant> restaurants = parseRestaurant(snapshot.data);
-          final List<Restaurant> search = restaurants
-              .where((restaurant) =>
-                  restaurant.name.toLowerCase().contains(query.toLowerCase()))
-              .toList();
-
-          final List<Restaurant> rank = restaurants
-              .where((resturant) => resturant.rating >= 4.3)
-              .toList();
-          topRated = rank;
-
-          if (query.isEmpty) {
-            return MediaQuery.removePadding(
-              removeTop: true,
-              context: context,
-              child: ListView.builder(
-                  itemCount: restaurants.length + 2,
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return _carouselBuilder(context);
-                    } else if (index == 1) {
-                      return Padding(
-                        padding: const EdgeInsets.only(
-                            left: 16.0, bottom: 8.0, right: 16.0, top: 32.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Discover The Best Place",
-                              style: Theme.of(context).textTheme.headline6,
-                            ),
-                            Container(
-                              width: 190,
-                              child: const Divider(
-                                height: 10,
-                                thickness: 1,
-                              ),
-                            )
-                          ],
-                        ),
-                      );
-                    } else {
-                      return _buildRestaurantItems(
-                          context, restaurants[index - 2]);
-                    }
-                  }),
-            );
-          } else if (search.isEmpty) {
-            return Center(
-              child: Text(
-                'Oops! We Can\'t Find It',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyText1!
-                    .apply(fontSizeDelta: 6.0, fontWeightDelta: 2),
-              ),
-            );
-          } else {
-            return ListView.builder(
-                itemCount: search.length,
-                itemBuilder: (context, index) {
-                  return _buildRestaurantItems(context, search[index]);
-                });
-          }
-        } else {
-          return Center(
-            child: Text('No Data'),
-          );
-        }
-      },
+      builder: _buildFutureBuilder,
     );
+  }
+
+  Widget _buildFutureBuilder(context, snapshot) {
+      if (snapshot.hasData) {
+        final List<Restaurant> restaurants = parseRestaurant(snapshot.data);
+        final List<Restaurant> search = restaurants
+            .where((restaurant) =>
+                restaurant.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+  
+        final List<Restaurant> rank = restaurants
+            .where((resturant) => resturant.rating >= 4.3)
+            .toList();
+        topRated = rank;
+  
+        if (query.isEmpty) {
+          return _listViewBuilderNonQuery(context, restaurants);
+        } 
+        else if (search.isEmpty) {
+          return Center(
+            child: Text(
+              'Oops! We Can\'t Find It',
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText1!
+                  .apply(fontSizeDelta: 6.0, fontWeightDelta: 2),
+            ),
+          );
+        } 
+        else {
+          return ListView.builder(
+              itemCount: search.length,
+              itemBuilder: (context, index) {
+                return _buildRestaurantItems(context, search[index]);
+              });
+        }
+      } else {
+        return Center(
+          child: Text('No Data'),
+        );
+      }
+    }
+
+  MediaQuery _listViewBuilderNonQuery(context, List<Restaurant> restaurants) {
+    return MediaQuery.removePadding(
+          removeTop: true,
+          context: context,
+          child: ListView.builder(
+              itemCount: restaurants.length + 2,
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return _carouselBuilder(context);
+                } else if (index == 1) {
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16.0, bottom: 8.0, right: 16.0, top: 32.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Discover The Best Place",
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                        Container(
+                          width: 190,
+                          child: const Divider(
+                            height: 10,
+                            thickness: 1,
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                } else {
+                  return _buildRestaurantItems(
+                      context, restaurants[index - 2]);
+                }
+              }),
+        );
   }
 
   Widget _carouselBuilder(BuildContext context) {
@@ -123,7 +132,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
           ),
         ),
         CarouselSlider(
-            items: topRated.map((e) => _listCarouselItems(context, e)).toList(),
+            items: _carouselItems(context),
             options: CarouselOptions(
                 height: 350,
                 aspectRatio: 2.0,
@@ -133,6 +142,8 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
       ],
     );
   }
+
+  List<Widget> _carouselItems(BuildContext context) => topRated.map((e) => _listCarouselItems(context, e)).toList();
 
   Widget _buildAndroid(BuildContext context) {
     return FloatingSearchAppBar(
@@ -259,15 +270,9 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                                     }
                                   });
 
-                                  print(fav.map((e) => e));
+                                 
                                 },
-                                icon: fav.contains(restaurant.name)
-                                    ? Icon(Platform.isIOS
-                                        ? CupertinoIcons.heart
-                                        : Icons.favorite)
-                                    : Icon(Platform.isIOS
-                                        ? CupertinoIcons.heart
-                                        : Icons.favorite_outline),
+                                icon: _favIconOption(restaurant),
                                 iconSize: 36.0,
                                 color: secondaryBrandColor),
                           ),
@@ -280,6 +285,16 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
             ),
           ),
         ));
+  }
+
+  Icon _favIconOption(Restaurant restaurant) {
+    return fav.contains(restaurant.name)
+                                  ? Icon(Platform.isIOS
+                                      ? CupertinoIcons.heart
+                                      : Icons.favorite)
+                                  : Icon(Platform.isIOS
+                                      ? CupertinoIcons.heart
+                                      : Icons.favorite_outline);
   }
 
   void _handleSubmit(String keyword) {
