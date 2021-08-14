@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:math';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -17,6 +19,7 @@ class RestaurantListScreen extends StatefulWidget {
 class _RestaurantListScreenState extends State<RestaurantListScreen> {
   List<String> fav = [];
   String query = "";
+  List<Restaurant> topRated = [];
 
   @override
   Widget build(BuildContext context) {
@@ -31,33 +34,67 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
         if (snapshot.hasData) {
           final List<Restaurant> restaurants = parseRestaurant(snapshot.data);
           final List<Restaurant> search = restaurants
-              .where((restaurant) => restaurant.name.toLowerCase().contains(query.toLowerCase()))
+              .where((restaurant) =>
+                  restaurant.name.toLowerCase().contains(query.toLowerCase()))
               .toList();
-          print("Hasil cari $query  ${search.map((e) => e.name)}");
+
+          final List<Restaurant> rank = restaurants
+              .where((resturant) => resturant.rating >= 4.3)
+              .toList();
+          topRated = rank;
 
           if (query.isEmpty) {
-            return ListView.builder(
-                itemCount: restaurants.length,
-                itemBuilder: (context, index) {
-                  return _buildRestaurantItems(context, restaurants[index]);
-                });
-          }  else if(search.isEmpty) {
+            return MediaQuery.removePadding( 
+              removeTop: true,
+              context: context,
+              child: ListView.builder(
+                  itemCount: restaurants.length + 2,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return _carouselBuilder(context);
+                    } else if (index == 1) {
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                            left: 16.0, bottom: 8.0, right: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Discover The Best Place",
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                            Container(
+                              width: 190,
+                              child: const Divider(
+                                height: 10,
+                                thickness: 1,
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    } else {
+                      return _buildRestaurantItems(context, restaurants[index-2]);
+                    }
+                  }),
+            );
+          } else if (search.isEmpty) {
             return Center(
-            child: Text('Oops! We Can\'t Find It',
-            style: Theme.of(context).textTheme.bodyText1!.apply(
-              fontSizeDelta: 6.0,
-              fontWeightDelta: 2),),
-          );
-          }
-          
-          else {
+              child: Text(
+                'Oops! We Can\'t Find It',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .apply(fontSizeDelta: 6.0, fontWeightDelta: 2),
+              ),
+            );
+          } else {
             return ListView.builder(
                 itemCount: search.length,
                 itemBuilder: (context, index) {
                   return _buildRestaurantItems(context, search[index]);
                 });
           }
-          
         } else {
           return Center(
             child: Text('No Data'),
@@ -67,7 +104,36 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
     );
   }
 
+  Widget _carouselBuilder(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 16.0, bottom: 8, top: 22.0),
+          child: Text(
+            'Popular Place',
+            style: Theme.of(context)
+                .textTheme
+                .headline5!
+                .apply(color: Colors.black),
+          ),
+        ),
+        CarouselSlider(
+            items: topRated.map((e) => _listCarouselItems(context, e)).toList(),
+            options: CarouselOptions(
+                height: 350,
+               aspectRatio: 2.0,
+                autoPlay: true,
+                viewportFraction: 0.8,
+                autoPlayCurve: Curves.easeInOutCubic)),
+      ],
+    );
+  }
+
   Widget _buildAndroid(BuildContext context) {
+   
     return FloatingSearchAppBar(
       title: Text(
         'Pick\'eat',
@@ -83,6 +149,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
       clearQueryOnClose: true,
       onQueryChanged: _handleChange,
       colorOnScroll: primaryBrandColor,
+      height: 70,
       body: _buildList(context),
     );
   }
@@ -100,7 +167,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
     return Material(
         color: primaryBrandColor,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
           child: Card(
             clipBehavior: Clip.antiAlias,
             elevation: 8,
@@ -217,5 +284,53 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
     setState(() {
       query = keyword;
     });
+  }
+
+  Widget _listCarouselItems(BuildContext context, Restaurant item) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(24.0),
+      splashColor: secondaryBrandColor.withAlpha(80),
+      focusColor: accentBrandColor,
+      onTap: () {},
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16.0, left: 8),
+        child: Stack(
+          alignment: Alignment.bottomLeft,
+          children: [
+            Ink.image(
+              image: NetworkImage(item.pictureId),
+              fit: BoxFit.cover,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, bottom: 10),
+              child: SizedBox(
+                height: 70,
+                child: Text(
+                  item.name,
+                  style: Theme.of(context).textTheme.bodyText1!.apply(
+                      color: primaryBrandColor,
+                      fontSizeDelta: 10,
+                      fontWeightDelta: 10),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width / 1.8,
+                height: 50,
+                child: Text(
+                  item.description,
+                  maxLines: 2,
+                  style: Theme.of(context).textTheme.bodyText2!.apply(
+                        color: primaryBrandColor,
+                      ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
