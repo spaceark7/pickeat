@@ -55,7 +55,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                     } else if (index == 1) {
                       return Padding(
                         padding: const EdgeInsets.only(
-                            left: 16.0, bottom: 8.0, right: 16.0),
+                            left: 16.0, bottom: 8.0, right: 16.0, top: 32.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -200,8 +200,8 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                               restaurant.name,
                               style: Theme.of(context)
                                   .textTheme
-                                  .headline5!
-                                  .apply(color: Colors.black),
+                                  .bodyText1!
+                                  .apply(color: Colors.black, fontSizeDelta: 3, fontWeightDelta: 5),
                             ),
                             Text(restaurant.city),
                             RatingBar(
