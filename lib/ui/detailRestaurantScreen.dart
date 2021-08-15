@@ -58,12 +58,12 @@ class DetailScreen extends StatelessWidget {
                                 Platform.isIOS
                                     ? CupertinoIcons.star
                                     : Icons.star,
-                                size: 24,
+                                size: 19,
                                 color: Colors.grey,
                               ),
                               starCount: 5,
                               spacing: 0.0,
-                              size: 24,
+                              size: 19,
                               isIndicator: false,
                               allowHalfRating: true,
                               color: secondaryBrandColor,
