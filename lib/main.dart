@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pickeat_app/common/style.dart';
 import 'package:pickeat_app/ui/detailRestaurantScreen.dart';
+import 'package:pickeat_app/ui/favoriteScreen.dart';
 import 'package:pickeat_app/ui/homeScreen.dart';
+import 'package:pickeat_app/ui/profileScreen.dart';
 
 import 'data/model/restaurant.dart';
 
@@ -15,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'PickEat',
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
        primaryColor: primaryBrandColor,
        accentColor: secondaryBrandColor,
@@ -35,7 +37,9 @@ class MyApp extends StatelessWidget {
      initialRoute: HomeScreen.routeName,
      routes: {
        HomeScreen.routeName: (context) => HomeScreen(),
-       DetailScreen.routeName: (context) => DetailScreen(restaurant: ModalRoute.of(context)?.settings.arguments as Restaurant)
+       DetailScreen.routeName: (context) => DetailScreen(restaurant: ModalRoute.of(context)?.settings.arguments as Restaurant),
+       FavoriteScreen.routeName: (context) => FavoriteScreen(),
+       ProfileScreen.routeName: (context) => ProfileScreen(),
      },
     );
   }

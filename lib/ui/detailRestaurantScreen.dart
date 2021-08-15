@@ -1,12 +1,13 @@
-import 'dart:convert';
+
 import 'dart:io';
 
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_simple_rating_bar/flutter_simple_rating_bar.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:pickeat_app/common/style.dart';
 import 'package:pickeat_app/data/model/restaurant.dart';
 
@@ -18,7 +19,6 @@ class DetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String desc = restaurant.description;
     final foods = _listFood();
     final drinks = _listDrink();
 
@@ -122,46 +122,92 @@ class DetailScreen extends StatelessWidget {
                   collapseOnTextTap: true,
                   linkColor: accentBrandColor,
                   animationDuration: Duration(milliseconds: 500),
-                  animationCurve: Curves.bounceInOut,
+                  animationCurve: Curves.ease,
                   style: TextStyle(color: Colors.black, fontSize: 16),
                 ),
                 SizedBox(
-                  height: 16,
+                  height: 24,
                 ),
-                Text(
-                  "Menus",
-                  style: Theme.of(context).textTheme.headline4,
+                Center(
+                  child: Text(
+                    "Menus",
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                ),
+                  Divider(
+                  color: Colors.black38,
                 ),
                 SizedBox(
                   height: 16,
                 ),
-                Column(
-                  children: [
-                    Text(
-                      'Food Selection',
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption!
-                          .apply(fontSizeDelta: 5),
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    SizedBox(
-                      height: 50,
-                      width: MediaQuery.of(context).size.width,
-                      child: GridView.count(
-                        scrollDirection: Axis.horizontal,
-                        crossAxisCount: 1,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio: 2 / 5,
-                        children: _listFoodGrid(foods),
-                      ),
-                    ),
-                  ],
+                menuGridHorizontal(context, foods, "Foods"),
+              
+                SizedBox(height: 16.0,),
+                menuGridHorizontal(context, drinks, "Drinks"),
+                SizedBox(height: 69.0,),
+
+               SizedBox(
+                 width: double.infinity,
+                 child: ElevatedButton(
+                   style: ElevatedButton.styleFrom(
+                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                     primary: secondaryBrandColor,
+                     textStyle: TextStyle(
+                       fontSize: 24,
+                       fontWeight: FontWeight.bold
+                     )
+                   ),
+                   onPressed: () {
+                     defaultTargetPlatform == TargetPlatform.iOS
+    ? showCupertinoDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: Text('Coming Soon!'),
+            content: Text('This feature will be coming soon!'),
+            actions: [
+              CupertinoDialogAction(
+                child: Text('Ok'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      )
+    : showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Coming Soon!',
+            style: Theme.of(context).textTheme.bodyText1!.apply(fontWeightDelta: 5, fontSizeDelta: 5),),
+            content: Text('This feature will be coming soon!',
+            style: Theme.of(context).textTheme.bodyText1!.apply(fontWeightDelta: 5),), 
+            actions: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: secondaryBrandColor
                 ),
-                MenuGridHorizontal(context, drinks)
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('Dismiss'),
+              ),
+            ],
+          );
+        },
+      );
+
+                   }, child: Padding(
+                     padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+                     child: Text("Book Table"),
+                   )
+              ),
+               ),
+               SizedBox(height: 30.0,)
+            
               
               ],
             ),
@@ -171,12 +217,12 @@ class DetailScreen extends StatelessWidget {
     ));
   }
 
-  Widget MenuGridHorizontal(BuildContext context, List<String> items ) {
+  Widget menuGridHorizontal(BuildContext context, List<String> items, String category ) {
     return Column(
       children: [
         Text(
-          'Food Selection',
-          style: Theme.of(context).textTheme.caption!.apply(fontSizeDelta: 5),
+          '$category Selection',
+          style: Theme.of(context).textTheme.caption!.apply(fontSizeDelta: 7, fontWeightDelta: 7),
         ),
         SizedBox(
           height: 8,

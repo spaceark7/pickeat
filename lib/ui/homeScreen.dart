@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:pickeat_app/ui/favoriteScreen.dart';
+import 'package:pickeat_app/ui/profileScreen.dart';
 import 'package:pickeat_app/ui/restaurantListScreen.dart';
 import 'package:pickeat_app/widgets/platformWidget.dart';
 
@@ -18,13 +20,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> _listWidget = [
     RestaurantListScreen(),
-    Placeholder(),
-    Placeholder()
+    FavoriteScreen(),
+    ProfileScreen(),
   ];
 
   List<BottomNavigationBarItem> _bottomNavBarItems = [
     BottomNavigationBarItem(
-        icon: Icon(Platform.isIOS ? CupertinoIcons.news : Icons.public),
+        icon: Icon(Platform.isIOS ? CupertinoIcons.house : Icons.home),
         label: 'Home'),
     BottomNavigationBarItem(
         icon: Icon(Platform.isIOS ? CupertinoIcons.heart : Icons.favorite),
