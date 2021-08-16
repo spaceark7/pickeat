@@ -9,8 +9,10 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:pickeat_app/common/style.dart';
 import 'package:pickeat_app/data/model/restaurant.dart';
+import 'package:pickeat_app/providers/favorite_module_provider.dart';
 import 'package:pickeat_app/ui/detailRestaurantScreen.dart';
 import 'package:pickeat_app/widgets/platformWidget.dart';
+import 'package:provider/provider.dart';
 
 class RestaurantListScreen extends StatefulWidget {
   @override
@@ -18,9 +20,9 @@ class RestaurantListScreen extends StatefulWidget {
 }
 
 class _RestaurantListScreenState extends State<RestaurantListScreen> {
-  List<String> fav = [];
-  String query = "";
-  List<Restaurant> topRated = [];
+  List<String> _fav = [];
+  String _query = "";
+  List<Restaurant> _topRated = [];
 
   @override
   Widget build(BuildContext context) {
@@ -40,14 +42,14 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
       final List<Restaurant> restaurants = parseRestaurant(snapshot.data);
       final List<Restaurant> search = restaurants
           .where((restaurant) =>
-              restaurant.name.toLowerCase().contains(query.toLowerCase()))
+              restaurant.name.toLowerCase().contains(_query.toLowerCase()))
           .toList();
 
       final List<Restaurant> rank =
           restaurants.where((resturant) => resturant.rating >= 4.3).toList();
-      topRated = rank;
+      _topRated = rank;
 
-      if (query.isEmpty) {
+      if (_query.isEmpty) {
         return _listViewBuilderNonQuery(context, restaurants);
       } else if (search.isEmpty) {
         return Center(
@@ -151,7 +153,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
   }
 
   List<Widget> _carouselItems(BuildContext context) =>
-      topRated.map((e) => _listCarouselItems(context, e)).toList();
+      _topRated.map((e) => _listCarouselItems(context, e)).toList();
 
   Widget _buildAndroid(BuildContext context) {
     return FloatingSearchAppBar(
@@ -171,44 +173,46 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
       onQueryChanged: _handleChange,
       colorOnScroll: primaryBrandColor,
       height: 70,
-      body: _buildList(context),
+      body: ChangeNotifierProvider(
+          create: (context) => FavoriteModuleProvider(),
+          child: _buildList(context)),
     );
   }
 
-  Widget _buildIOS(BuildContext context) {  
+  Widget _buildIOS(BuildContext context) {
     return CupertinoPageScaffold(
       resizeToAvoidBottomInset: false,
-        navigationBar: CupertinoNavigationBar(
-          backgroundColor: Colors.white,
-         
-          middle: Scaffold(
+      navigationBar: CupertinoNavigationBar(
+        backgroundColor: Colors.white,
+        middle: Scaffold(
             backgroundColor: Colors.white,
-            body: 
-          FloatingSearchAppBar(
-      title: Text(
-        'Pick\'eat',
-        style:
-            Theme.of(context).textTheme.headline4!.apply(color: Colors.black),
+            body: FloatingSearchAppBar(
+              title: Text(
+                'Pick\'eat',
+                style: Theme.of(context)
+                    .textTheme
+                    .headline4!
+                    .apply(color: Colors.black),
+              ),
+              transitionCurve: Curves.easeInOut,
+              transitionDuration: Duration(milliseconds: 900),
+              accentColor: secondaryBrandColor,
+              hintStyle: Theme.of(context).textTheme.bodyText1,
+              hint: 'I\'m Looking For ...',
+              onSubmitted: _handleSubmit,
+              iconColor: secondaryBrandColor,
+              clearQueryOnClose: true,
+              onQueryChanged: _handleChange,
+              colorOnScroll: primaryBrandColor,
+              height: 70,
+              body: null,
+            )),
+        transitionBetweenRoutes: false,
       ),
-      transitionCurve: Curves.easeInOut,
-      transitionDuration: Duration(milliseconds: 900),
-      accentColor: secondaryBrandColor,
-      hintStyle: Theme.of(context).textTheme.bodyText1,
-      hint: 'I\'m Looking For ...',
-      onSubmitted: _handleSubmit,
-      iconColor: secondaryBrandColor,
-      clearQueryOnClose: true,
-      onQueryChanged: _handleChange,
-      colorOnScroll: primaryBrandColor,
-      height: 70,
-      body: null,
-      
-    )
-          
-          ),
-          transitionBetweenRoutes: false,
-        ),
-        child: _buildList(context));
+      child: ChangeNotifierProvider(
+          create: (context) => FavoriteModuleProvider(),
+          child: _buildList(context)),
+    );
   }
 
   Widget _buildRestaurantItems(BuildContext context, Restaurant restaurant) {
@@ -261,7 +265,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                             RatingBar.builder(
                               initialRating: restaurant.rating,
                               itemBuilder: (context, _) => Icon(
-                                 Platform.isIOS
+                                Platform.isIOS
                                     ? CupertinoIcons.star
                                     : Icons.star,
                                 size: 6,
@@ -270,9 +274,8 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                               itemSize: 24,
                               itemCount: 5,
                               ignoreGestures: true,
-                              onRatingUpdate: (rating){},
+                              onRatingUpdate: (rating) {},
                               allowHalfRating: true,
-                             
                             )
                           ],
                         ),
@@ -281,31 +284,15 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                           child: Center(
                             child: IconButton(
                                 onPressed: () {
-                                  setState(() {
-                                    if (fav.contains(restaurant.name)) {
-                                      fav.remove(restaurant.name);
-                                      final snackBar = SnackBar(
-                                        content: Text(
-                                            '${restaurant.name} is deleted from Favorite!'),
-                                        backgroundColor: accentBrandColor,
-                                        duration: Duration(seconds: 1),
-                                      );
-
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(snackBar);
-                                    } else {
-                                      fav.add(restaurant.name);
-                                      final snackBar = SnackBar(
-                                        content: Text('Added to Favorite!'),
-                                        backgroundColor: secondaryBrandColor,
-                                        duration: Duration(seconds: 1),
-                                      );
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(snackBar);
-                                    }
-                                  });
+                                  var contains =
+                                      context.read<FavoriteModuleProvider>().favList.contains(restaurant);
+                                  if (contains) {
+                                    _removeFavFromProvider(context, restaurant);
+                                  } else {
+                                    _addFavToProvider(context, restaurant);
+                                  }
                                 },
-                                icon: _favIconOption(restaurant),
+                                icon: _buildIconItem(context, restaurant),
                                 iconSize: 36.0,
                                 color: secondaryBrandColor),
                           ),
@@ -320,21 +307,47 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
         ));
   }
 
-  Icon _favIconOption(Restaurant restaurant) {
-    return fav.contains(restaurant.name)
+  void _removeFavFromProvider(BuildContext context, Restaurant restaurant) {
+    context.read<FavoriteModuleProvider>().remove(restaurant);
+    final snackBar = SnackBar(
+      content: Text('${restaurant.name} is deleted from Favorite!'),
+      backgroundColor: accentBrandColor,
+      duration: Duration(seconds: 1),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void _addFavToProvider(BuildContext context, Restaurant restaurant) {
+    context.read<FavoriteModuleProvider>().add(restaurant);
+    final snackBar = SnackBar(
+      content: Text('Added to Favorite!'),
+      backgroundColor: secondaryBrandColor,
+      duration: Duration(seconds: 1),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  Icon _buildIconItem(BuildContext context, Restaurant restaurant) {
+    print(context.watch<FavoriteModuleProvider>().favList.map((e) => e.name));
+    return Provider.of<FavoriteModuleProvider>(context, listen: false)
+            .favList
+            .contains(restaurant)
         ? Icon(Platform.isIOS ? CupertinoIcons.heart : Icons.favorite)
-        : Icon(Platform.isIOS ? CupertinoIcons.heart_circle : Icons.favorite_outline);
+        : Icon(Platform.isIOS
+            ? CupertinoIcons.heart_circle
+            : Icons.favorite_outline);
   }
 
   void _handleSubmit(String keyword) {
     setState(() {
-      query = keyword;
+      _query = keyword;
     });
   }
 
   void _handleChange(String keyword) {
     setState(() {
-      query = keyword;
+      _query = keyword;
     });
   }
 

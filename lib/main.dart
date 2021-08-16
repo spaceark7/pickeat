@@ -1,14 +1,25 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:pickeat_app/common/style.dart';
+import 'package:pickeat_app/providers/favorite_module_provider.dart';
 import 'package:pickeat_app/ui/detailRestaurantScreen.dart';
 import 'package:pickeat_app/ui/favoriteScreen.dart';
 import 'package:pickeat_app/ui/homeScreen.dart';
 import 'package:pickeat_app/ui/profileScreen.dart';
+import 'package:provider/provider.dart';
 
 import 'data/model/restaurant.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(providers: [
+      ChangeNotifierProvider(create: (context) => FavoriteModuleProvider())
+    ],
+    child:  MyApp() ,)
+    
+    
+   );
 }
 
 class MyApp extends StatelessWidget {
@@ -45,37 +56,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class SplashScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration (
-         image: DecorationImage(image: 
-         AssetImage('assets/images/s1.jpg',),
-         fit: BoxFit.cover)
-        ),
-
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 60.0),
-                child: Image.asset('assets/logo.png'
-                ,height: 70,
-                width: 70,),
-              ),
-              ElevatedButton(onPressed: () {}, child: Text("Continue"))
-            ],
-          )
-        ),
-
-      ),
-      
-    );
-  }
-}
