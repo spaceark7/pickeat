@@ -4,8 +4,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:flutter_simple_rating_bar/flutter_simple_rating_bar.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+
 import 'package:material_floating_search_bar/material_floating_search_bar.dart';
 import 'package:pickeat_app/common/style.dart';
 import 'package:pickeat_app/data/model/restaurant.dart';
@@ -258,21 +258,21 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                                       fontWeightDelta: 5),
                             ),
                             Text(restaurant.city),
-                            RatingBar(
-                              rating: restaurant.rating,
-                              icon: Icon(
-                                Platform.isIOS
+                            RatingBar.builder(
+                              initialRating: restaurant.rating,
+                              itemBuilder: (context, _) => Icon(
+                                 Platform.isIOS
                                     ? CupertinoIcons.star
                                     : Icons.star,
-                                size: 16,
-                                color: Colors.grey,
+                                size: 6,
+                                color: secondaryBrandColor,
                               ),
-                              starCount: 5,
-                              spacing: 0.0,
-                              size: 16,
-                              isIndicator: false,
+                              itemSize: 24,
+                              itemCount: 5,
+                              ignoreGestures: true,
+                              onRatingUpdate: (rating){},
                               allowHalfRating: true,
-                              color: secondaryBrandColor,
+                             
                             )
                           ],
                         ),

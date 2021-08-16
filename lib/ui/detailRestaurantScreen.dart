@@ -6,8 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:flutter_simple_rating_bar/flutter_simple_rating_bar.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:pickeat_app/common/style.dart';
 import 'package:pickeat_app/data/model/restaurant.dart';
 
@@ -52,22 +51,22 @@ class DetailScreen extends StatelessWidget {
                           children: [
                             Text('Overall Score',
                                 style: Theme.of(context).textTheme.bodyText1),
-                            RatingBar(
-                              rating: restaurant.rating,
-                              icon: Icon(
-                                Platform.isIOS
+                             RatingBar.builder(
+                              initialRating: restaurant.rating,
+                              itemBuilder: (context, _) => Icon(
+                                 Platform.isIOS
                                     ? CupertinoIcons.star
                                     : Icons.star,
-                                size: 19,
-                                color: Colors.grey,
+                                size: 8,
+                                color: secondaryBrandColor,
                               ),
-                              starCount: 5,
-                              spacing: 0.0,
-                              size: 19,
-                              isIndicator: false,
+                              itemSize: 18,
+                              itemCount: 5,
+                              ignoreGestures: true,
+                              onRatingUpdate: (rating){},
                               allowHalfRating: true,
-                              color: secondaryBrandColor,
-                            ),
+                             
+                            )
                           ],
                         ),
                       )
