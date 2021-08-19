@@ -18,8 +18,8 @@ class DetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foods = _listFood();
-    final drinks = _listDrink();
+    // final foods = _listFood();
+    // final drinks = _listDrink();
 
     return Scaffold(
         body: NestedScrollView(
@@ -52,7 +52,7 @@ class DetailScreen extends StatelessWidget {
                             Text('Overall Score',
                                 style: Theme.of(context).textTheme.bodyText1),
                              RatingBar.builder(
-                              initialRating: restaurant.rating,
+                              initialRating: 0,
                               itemBuilder: (context, _) => Icon(
                                  Platform.isIOS
                                     ? CupertinoIcons.star
@@ -88,7 +88,7 @@ class DetailScreen extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      restaurant.city,
+                     "ss",
                       style: Theme.of(context).textTheme.bodyText1,
                     ),
                   ],
@@ -113,7 +113,7 @@ class DetailScreen extends StatelessWidget {
                   height: 16,
                 ),
                 ExpandableText(
-                  restaurant.description,
+                  "ss",
                   expandText: 'Read More',
                   collapseText: 'Show Less',
                   animation: true,
@@ -139,11 +139,11 @@ class DetailScreen extends StatelessWidget {
                 SizedBox(
                   height: 16,
                 ),
-                menuGridHorizontal(context, foods, "Foods"),
+                // menuGridHorizontal(context, foods, "Foods"),
               
-                SizedBox(height: 16.0,),
-                menuGridHorizontal(context, drinks, "Drinks"),
-                SizedBox(height: 69.0,),
+                // SizedBox(height: 16.0,),
+                // menuGridHorizontal(context, drinks, "Drinks"),
+                // SizedBox(height: 69.0,),
 
                SizedBox(
                  width: double.infinity,
@@ -268,18 +268,18 @@ class DetailScreen extends StatelessWidget {
         .toList();
   }
 
-  List<String> _listFood() {
-    List ss = restaurant.menus['foods'];
-    List<String> w = ss.map((e) => e['name'] as String).toList();
-    return w;
-  }
+  // List<String> _listFood() {
+  //   List ss = restaurant.menus['foods'];
+  //   List<String> w = ss.map((e) => e['name'] as String).toList();
+  //   return w;
+  // }
 
-  List<String> _listDrink() {
-    List ss = restaurant.menus['drinks'];
-    List<String> w = ss.map((e) => e['name'] as String).toList();
+  // List<String> _listDrink() {
+  //   List ss = restaurant.menus['drinks'];
+  //   List<String> w = ss.map((e) => e['name'] as String).toList();
 
-    return w;
-  }
+  //   return w;
+  // }
 
   List<Widget> _sliverBuilder(context, isScrolled) {
     return [
@@ -292,14 +292,14 @@ class DetailScreen extends StatelessWidget {
         flexibleSpace: FlexibleSpaceBar(
           centerTitle: true,
           title: Text(
-            restaurant.name,
+            "mm",
             style: Theme.of(context)
                 .textTheme
                 .headline5!
                 .apply(color: Colors.white),
           ),
           background: Image.network(
-            restaurant.pictureId,
+            "mm",
             fit: BoxFit.cover,
           ),
         ),

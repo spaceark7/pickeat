@@ -19,7 +19,6 @@ class FavoriteScreen extends StatelessWidget {
     print("from fav screen : $_favList");
     print("from fav screen : ${FavoriteModuleProvider.tf}");
 
-
     return Scaffold(
         body: FavoriteModuleProvider.tf.isEmpty
             ? Center(
@@ -29,7 +28,8 @@ class FavoriteScreen extends StatelessWidget {
                 itemCount:
                     context.watch<FavoriteModuleProvider>().favList.length,
                 itemBuilder: (context, index) {
-                  return _buildList(context, _favList[index]);
+                  return Container();
+                  // return _buildList(context, _favList[index]);
                 }));
   }
 
@@ -43,7 +43,7 @@ class FavoriteScreen extends StatelessWidget {
     ));
   }
 
-  Widget _buildList(BuildContext context, Restaurant favList) {
-    return Text(favList.name);
-  }
+  // Widget _buildList(BuildContext context, Restaurant favList) {
+  //   return Text(favList.name);
+  // }
 }
