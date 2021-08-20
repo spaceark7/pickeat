@@ -8,7 +8,6 @@ import 'package:pickeat_app/ui/favoriteScreen.dart';
 import 'package:pickeat_app/ui/homeScreen.dart';
 import 'package:pickeat_app/ui/profileScreen.dart';
 import 'package:provider/provider.dart';
-
 import 'data/model/restaurant.dart';
 
 void main() {

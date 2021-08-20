@@ -2,9 +2,10 @@ import 'dart:convert';
 
 import 'package:pickeat_app/data/model/restaurant.dart';
 import 'package:http/http.dart' as http;
+import 'package:pickeat_app/data/model/restaurant_detail.dart';
 
 class ApiService {
-  var client = http.Client();
+  static var client = http.Client();
 
   Restaurant? restaurant;
   String? query = "";
@@ -15,12 +16,12 @@ class ApiService {
 
   static final String baseUrl = 'https://restaurant-api.dicoding.dev';
   static final String listEndPoint = '/list';
-  late String detailEndPoint = '/detail/$id';
+  static String detailEndPoint = '/detail/';
   late String searchEndpoint = '/search?q=$query';
   late final String fetchPictureOption =
       "https://restaurant-api.dicoding.dev/images/";
 
-  Future<Restaurants> listRestaurant() async {
+  static Future<Restaurants> listRestaurant() async {
     final response = await client.get(Uri.parse(baseUrl + listEndPoint));
     if (response.statusCode == 200) {
       return Restaurants.fromJson(json.decode(response.body));
@@ -29,5 +30,13 @@ class ApiService {
     }
   }
 
- 
+  static Future<RestaurantDetail> detailRestaurant(String? id) async {
+    final response =
+        await client.get(Uri.parse(baseUrl + detailEndPoint + id!));
+    if (response.statusCode == 200) {
+      return restaurantDetailFromJson(response.body);
+    } else {
+      throw Exception("Failed Fetching Detail Data");
+    }
+  }
 }

@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:expandable_text/expandable_text.dart';
@@ -7,66 +6,79 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:get/get.dart';
 import 'package:pickeat_app/common/style.dart';
+import 'package:pickeat_app/controller/restaurant_controller.dart';
 import 'package:pickeat_app/data/model/restaurant.dart';
 
-class DetailScreen extends StatelessWidget {
+class DetailScreen extends StatefulWidget {
   static final routeName = '/detail_screen';
   final Restaurant restaurant;
 
   const DetailScreen({Key? key, required this.restaurant});
 
   @override
+  _DetailScreenState createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
+  final imageUrl = "https://restaurant-api.dicoding.dev/images/medium/";
+  final RestaurantsController item = Get.find();
+  @override
+  void initState() {
+    item.fetchRestaurantDetail(item.id.value);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // final foods = _listFood();
-    // final drinks = _listDrink();
 
     return Scaffold(
-        body: NestedScrollView(
+      body: NestedScrollView(
       headerSliverBuilder: _sliverBuilder,
       body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        restaurant.rating.toString(),
-                        style: Theme.of(context).textTheme.bodyText1!.apply(
-                            color: secondaryBrandColor,
-                            fontSizeDelta: 32.0,
-                            fontWeightDelta: 5),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                      Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text('Overall Score',
-                                style: Theme.of(context).textTheme.bodyText1),
-                             RatingBar.builder(
-                              initialRating: 0,
-                              itemBuilder: (context, _) => Icon(
-                                 Platform.isIOS
-                                    ? CupertinoIcons.star
-                                    : Icons.star,
-                                size: 8,
-                                color: secondaryBrandColor,
-                              ),
-                              itemSize: 18,
-                              itemCount: 5,
-                              ignoreGestures: true,
-                              onRatingUpdate: (rating){},
-                              allowHalfRating: true,
-                             
-                            )
+                            Obx(() => Text(
+                             item.restaurantInfo.value.rating.toString(),
+                              style: Theme.of(context).textTheme.bodyText1!.apply(
+                               color: secondaryBrandColor,
+                               fontSizeDelta: 32.0,
+                               fontWeightDelta: 5),
+                           )),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Overall Score',
+                                      style: Theme.of(context).textTheme.bodyText1),
+                            Obx(() => 
+                              RatingBar.builder(
+                                     initialRating: item.restaurantInfo.value.rating!,
+                                      itemBuilder: (context, _) => 
+                                      Icon( Platform.isIOS
+                                                ? CupertinoIcons.star
+                                                : Icons.star,
+                                            size: 8,
+                                            color: secondaryBrandColor,
+                                          ),
+                                          itemSize: 18,
+                                          itemCount: 5,
+                                          ignoreGestures: true,
+                                          onRatingUpdate: (rating) {},
+                                          allowHalfRating: true,
+                                  ))
                           ],
                         ),
                       )
@@ -88,7 +100,7 @@ class DetailScreen extends StatelessWidget {
                       ),
                     ),
                     Text(
-                     "ss",
+                      item.restaurantInfo.value.address!,
                       style: Theme.of(context).textTheme.bodyText1,
                     ),
                   ],
@@ -113,7 +125,7 @@ class DetailScreen extends StatelessWidget {
                   height: 16,
                 ),
                 ExpandableText(
-                  "ss",
+                  widget.restaurant.description,
                   expandText: 'Read More',
                   collapseText: 'Show Less',
                   animation: true,
@@ -133,81 +145,91 @@ class DetailScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.headline4,
                   ),
                 ),
-                  Divider(
+                Divider(
                   color: Colors.black38,
                 ),
                 SizedBox(
                   height: 16,
                 ),
                 // menuGridHorizontal(context, foods, "Foods"),
-              
+
                 // SizedBox(height: 16.0,),
                 // menuGridHorizontal(context, drinks, "Drinks"),
                 // SizedBox(height: 69.0,),
 
-               SizedBox(
-                 width: double.infinity,
-                 child: ElevatedButton(
-                   style: ElevatedButton.styleFrom(
-                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                     primary: secondaryBrandColor,
-                     textStyle: TextStyle(
-                       fontSize: 24,
-                       fontWeight: FontWeight.bold
-                     )
-                   ),
-                   onPressed: () {
-                     defaultTargetPlatform == TargetPlatform.iOS
-    ? showCupertinoDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (context) {
-          return CupertinoAlertDialog(
-            title: Text('Coming Soon!'),
-            content: Text('This feature will be coming soon!'),
-            actions: [
-              CupertinoDialogAction(
-                child: Text('Ok'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          );
-        },
-      )
-    : showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Coming Soon!',
-            style: Theme.of(context).textTheme.bodyText1!.apply(fontWeightDelta: 5, fontSizeDelta: 5),),
-            content: Text('This feature will be coming soon!',
-            style: Theme.of(context).textTheme.bodyText1!.apply(fontWeightDelta: 5),), 
-            actions: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: secondaryBrandColor
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16)),
+                          primary: secondaryBrandColor,
+                          textStyle: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold)),
+                      onPressed: () {
+                        defaultTargetPlatform == TargetPlatform.iOS
+                            ? showCupertinoDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                builder: (context) {
+                                  return CupertinoAlertDialog(
+                                    title: Text('Coming Soon!'),
+                                    content: Text(
+                                        'This feature will be coming soon!'),
+                                    actions: [
+                                      CupertinoDialogAction(
+                                        child: Text('Ok'),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              )
+                            : showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: Text(
+                                      'Coming Soon!',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .apply(
+                                              fontWeightDelta: 5,
+                                              fontSizeDelta: 5),
+                                    ),
+                                    content: Text(
+                                      'This feature will be coming soon!',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .apply(fontWeightDelta: 5),
+                                    ),
+                                    actions: [
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                            primary: secondaryBrandColor),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text('Dismiss'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 10.0),
+                        child: Text("Book Table"),
+                      )),
                 ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text('Dismiss'),
-              ),
-            ],
-          );
-        },
-      );
-
-                   }, child: Padding(
-                     padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
-                     child: Text("Book Table"),
-                   )
-              ),
-               ),
-               SizedBox(height: 30.0,)
-            
-              
+                SizedBox(
+                  height: 30.0,
+                )
               ],
             ),
           )
@@ -216,12 +238,16 @@ class DetailScreen extends StatelessWidget {
     ));
   }
 
-  Widget menuGridHorizontal(BuildContext context, List<String> items, String category ) {
+  Widget menuGridHorizontal(
+      BuildContext context, List<String> items, String category) {
     return Column(
       children: [
         Text(
           '$category Selection',
-          style: Theme.of(context).textTheme.caption!.apply(fontSizeDelta: 7, fontWeightDelta: 7),
+          style: Theme.of(context)
+              .textTheme
+              .caption!
+              .apply(fontSizeDelta: 7, fontWeightDelta: 7),
         ),
         SizedBox(
           height: 8,
@@ -268,42 +294,31 @@ class DetailScreen extends StatelessWidget {
         .toList();
   }
 
-  // List<String> _listFood() {
-  //   List ss = restaurant.menus['foods'];
-  //   List<String> w = ss.map((e) => e['name'] as String).toList();
-  //   return w;
-  // }
-
-  // List<String> _listDrink() {
-  //   List ss = restaurant.menus['drinks'];
-  //   List<String> w = ss.map((e) => e['name'] as String).toList();
-
-  //   return w;
-  // }
-
   List<Widget> _sliverBuilder(context, isScrolled) {
     return [
-      SliverAppBar(
-        expandedHeight: 300,
-        pinned: true,
-        iconTheme: IconThemeData(color: Colors.white),
-        backgroundColor: secondaryBrandColor,
-        foregroundColor: secondaryBrandColor,
-        flexibleSpace: FlexibleSpaceBar(
-          centerTitle: true,
-          title: Text(
-            "mm",
-            style: Theme.of(context)
-                .textTheme
-                .headline5!
-                .apply(color: Colors.white),
-          ),
-          background: Image.network(
-            "mm",
-            fit: BoxFit.cover,
-          ),
-        ),
-      )
+      Obx(() => SliverAppBar(
+              expandedHeight: 300,
+              pinned: true,
+              iconTheme: IconThemeData(color: Colors.white),
+              backgroundColor: secondaryBrandColor,
+              foregroundColor: secondaryBrandColor,
+              flexibleSpace: FlexibleSpaceBar(
+                centerTitle: true,
+                title: Text(
+                  widget.restaurant.name!,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline5!
+                      .apply(color: Colors.white),
+                ),
+                background: Image.network(
+                  imageUrl + item.restaurantInfo.value.pictureId!,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ))
     ];
   }
-}
+  
+   }
+

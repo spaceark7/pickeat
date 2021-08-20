@@ -16,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   int _bottomNavIndex = 0;
 
   List<Widget> _listWidget = [

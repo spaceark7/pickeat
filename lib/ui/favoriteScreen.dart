@@ -1,36 +1,39 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:pickeat_app/data/model/restaurant.dart';
-import 'package:pickeat_app/providers/favorite_module_provider.dart';
-import 'package:pickeat_app/widgets/platformWidget.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
+import 'package:pickeat_app/controller/restaurant_controller.dart';
 
-class FavoriteScreen extends StatelessWidget {
+import 'package:pickeat_app/widgets/platformWidget.dart';
+
+class FavoriteScreen extends StatefulWidget {
   static final routeName = '/favorite_page';
 
+  @override
+  _FavoriteScreenState createState() => _FavoriteScreenState();
+}
+
+class _FavoriteScreenState extends State<FavoriteScreen> {
+  final RestaurantsController item = Get.find();
   @override
   Widget build(BuildContext context) {
     return PlatformWidget(androidBuilder: _buildAndroid, iosBuilder: _buildIOS);
   }
 
   Widget _buildAndroid(BuildContext context) {
-    final _favList = context.read<FavoriteModuleProvider>().favList;
-    print("from fav screen : $_favList");
-    print("from fav screen : ${FavoriteModuleProvider.tf}");
+    return Scaffold(body:
+         Obx(() {
+            print("Fav Screen $item");
+          return ListView.builder(
+              itemCount: item.restaurantList.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  child: Text(item.restaurantList[index].name!),
+                );
 
-    return Scaffold(
-        body: FavoriteModuleProvider.tf.isEmpty
-            ? Center(
-                child: Text("No data"),
-              )
-            : ListView.builder(
-                itemCount:
-                    context.watch<FavoriteModuleProvider>().favList.length,
-                itemBuilder: (context, index) {
-                  return Container();
-                  // return _buildList(context, _favList[index]);
-                }));
+              });
+        })
+        );
   }
 
   Widget _buildIOS(BuildContext context) {
@@ -42,8 +45,4 @@ class FavoriteScreen extends StatelessWidget {
       ),
     ));
   }
-
-  // Widget _buildList(BuildContext context, Restaurant favList) {
-  //   return Text(favList.name);
-  // }
 }
